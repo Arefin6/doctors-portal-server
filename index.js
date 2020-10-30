@@ -12,20 +12,37 @@ app.use(cors());
 
 const client = new MongoClient(uri, { useNewUrlParser: true,useUnifiedTopology: true });
 client.connect(err => {
-  const productsCollection = client.db("doctors-portal").collection("appointments");
+  const appointmentsCollection = client.db("doctors-portal").collection("appointments");
 //   const ordersCollection = client.db("ema-jhon-simple").collection("orders");
     
    app.post('/addAppointment',(req,res) => {
        const appointment = req.body;
-       productsCollection.insertOne(appointment)
+       appointmentsCollection.insertOne(appointment)
        .then(result =>{
            res.send(result.insertedCount>0);
        })
-   })
+   });
 
-  
+   app.post('/appointmentsByDate',(req,res) => {
 
+    const date = req.body;
+   
+    appointmentsCollection.find({date:date.date})
+    .toArray((err,documents)=>{
+        res.send(documents);
 
+    })
+
+   });
+   
+   app.get('/allPatients',(req,res) => {
+   
+    appointmentsCollection.find({})
+    .toArray((err,documents)=>{
+        res.send(documents);
+
+    })
+   });
 
 });
 
